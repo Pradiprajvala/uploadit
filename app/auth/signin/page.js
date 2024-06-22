@@ -42,11 +42,11 @@ function SignIn() {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
 
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   if (urlParams.get(name) === "CredentialsSignin")
-  //     setLoginInvalidCredentials(true);
-  // }, []);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get(name) === "CredentialsSignin")
+      setLoginInvalidCredentials(true);
+  }, []);
 
   const checkUsernameAvailable = async (username) => {
     if (username === "") return;

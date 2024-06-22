@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./globals.css";
 import Projects from "./components/Projects/Projects";
 
@@ -10,6 +10,15 @@ export default function Home() {
   const [selctedFile, setSelectedFile] = useState(null);
   const [projectName, setProjectName] = useState("");
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    async function signInIfNot() {
+      if (status !== "authenticated") {
+        await signIn();
+      }
+    }
+    signInIfNot();
+  }, [status]);
 
   const getProjects = async () => {
     try {
@@ -77,7 +86,6 @@ export default function Home() {
     );
 
   // router.push("/auth/signin");
-  signIn();
   return <></>;
   // return (
   //   <div className="min-h-screen bg-slate-700 text-white flex flex-col items-center justify-center">
