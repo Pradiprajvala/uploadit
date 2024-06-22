@@ -1,8 +1,5 @@
-import {
-  ObjectId,
-  ProjectsCollection,
-  UsersCollection,
-} from "../MongoServices";
+import { ObjectId, ProjectsCollection } from "../MongoServices";
+import { RetriveUser } from "../UserUtils/RetriveUser";
 
 async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
   try {
@@ -32,25 +29,33 @@ async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
 
 async function RetriveProjectsOfUser({ userID }) {
   try {
-    const foundUser = await UsersCollection.findOne({
-      _id: new ObjectId(userID),
-    });
-    if (!foundUser) {
-      return {
-        error: true,
-        status: 404,
-        message: "User Not Found",
-      };
-    }
-    console.log(foundUser);
-    const projectIDs = foundUser.projects || [];
-    console.log(projectIDs);
+    // const foundUser = await UsersCollection.findOne({
+    //   _id: new ObjectId(userID),
+    // });
+    // if (!foundUser) {
+    //   return {
+    //     error: true,
+    //     status: 404,
+    //     message: "User Not Found",
+    //   };
+    // }
+    // const projectIDs = foundUser.projects || [];
     const projects = await ProjectsCollection.find({
-      _id: {
-        $in: projectIDs,
-      },
+      $or: [
+        { ownerId: userID },
+        {
+          members: {
+            $elemMatch: {
+              $eq: userID,
+            },
+          },
+        },
+      ],
     }).toArray();
-    console.log(projects);
+    for (let project of projects) {
+      const res = await RetriveUser({ userID: project.ownerId });
+      project.owner = res.user;
+    }
     return {
       error: false,
       status: 200,

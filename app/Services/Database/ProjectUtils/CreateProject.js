@@ -1,37 +1,20 @@
-import {
-  ObjectId,
-  ProjectsCollection,
-  UsersCollection,
-} from "@/app/Services/Database/MongoServices";
+import { ProjectsCollection } from "@/app/Services/Database/MongoServices";
 
 export async function CreateProject(projectDetails) {
-  const { projectName, ownerId } = projectDetails;
+  const { projectName, ownerId, projectDesciption, members } = projectDetails;
   try {
     const insertedProject = await ProjectsCollection.insertOne({
       name: projectName,
+      description: projectDesciption,
       ownerId: ownerId,
       createdDate: new Date(),
       videos: [],
-      members: [],
+      members: members.split(","),
     });
     if (!insertedProject.insertedId) {
       return {
         error: true,
         status: 701,
-      };
-    }
-    const updateDetails = await UsersCollection.updateOne(
-      { _id: new ObjectId(ownerId) },
-      {
-        $push: {
-          projects: insertedProject.insertedId,
-        },
-      }
-    );
-    if (!updateDetails.modifiedCount) {
-      return {
-        error: true,
-        status: 702,
       };
     }
     const insertedProjectDocument = await ProjectsCollection.findOne({
@@ -42,8 +25,7 @@ export async function CreateProject(projectDetails) {
       project: insertedProjectDocument,
     };
   } catch (error) {
-    console.log("user col", UsersCollection);
-    console.log("error1", error);
+    console.log(error);
     return {
       error: true,
       message: "Something Went Wrong",

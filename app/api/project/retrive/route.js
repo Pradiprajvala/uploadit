@@ -1,18 +1,17 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/googleSetup";
 import { RetriveProjectsOfUser } from "@/app/Services/Database/ProjectUtils/RetriveProject";
 
-export async function GET() {
+export async function POST(request) {
   try {
-    const session = await getServerSession(authOptions);
-    console.log(session.user);
+    const formData = await request.formData();
+    const projectOwnerId = formData.get("ownerId");
     const projects = await RetriveProjectsOfUser({
-      userID: session.user.mongoId,
+      userID: projectOwnerId,
     });
     return NextResponse.json({
-      projects: projects,
-      status: 200,
+      ...projects,
     });
   } catch (error) {
     console.log(error);
