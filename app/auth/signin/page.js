@@ -42,15 +42,11 @@ function SignIn() {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
 
-  useEffect(() => {
-    if (getQueryParam("error") === "CredentialsSignin")
-      setLoginInvalidCredentials(true);
-  }, []);
-
-  const getQueryParam = (name) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  };
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   if (urlParams.get(name) === "CredentialsSignin")
+  //     setLoginInvalidCredentials(true);
+  // }, []);
 
   const checkUsernameAvailable = async (username) => {
     if (username === "") return;
@@ -130,7 +126,7 @@ function SignIn() {
         await signIn("credentials", {
           username: data.username,
           password: data.password,
-          callbackUrl: "localhost:3000",
+          callbackUrl: process.env.BASE_URL || "localhost:3000",
         });
       }
     } catch (error) {
@@ -259,7 +255,7 @@ function SignIn() {
       await signIn("credentials", {
         username: loginUsername,
         password: loginPassword,
-        callbackUrl: "localhost:3000",
+        callbackUrl: process.env.BASE_URL || "http://localhost:3000",
       });
     } catch (error) {
       console.log(error);
