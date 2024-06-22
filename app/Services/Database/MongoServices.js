@@ -1,6 +1,5 @@
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
-const uri =
-  "mongodb+srv://youtube:CY5UAI4CMJRDDT0f@videos.v8flqyx.mongodb.net/?retryWrites=true&w=majority&appName=Videos";
+const uri = process.env.MONGODB_URL;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,

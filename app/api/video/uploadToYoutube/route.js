@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/googleSetup";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import streamifier from "streamifier";

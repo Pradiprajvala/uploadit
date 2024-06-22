@@ -1,7 +1,7 @@
 import { ref, uploadBytesResumable } from "firebase/storage";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/googleSetup";
 import { storage } from "@/app/Services/Database/firebase";
 import { v4 as uuid } from "uuid";
 import { CreateVideo } from "@/app/Services/Database/VideoUtils/CreateVideo";
@@ -48,7 +48,6 @@ export async function POST(request) {
               title: undefined,
             });
             if (insertedVideo.error) {
-              console.log(insertedVideo);
               const error = new Error(" Could Not Create Video");
               error.status = insertedVideo.status;
               throw error;
