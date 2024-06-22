@@ -1,7 +1,6 @@
 import { UsersCollection } from "@/app/Services/Database/MongoServices";
 import NextAuth from "next-auth";
 import CredentialProvider from "next-auth/providers/credentials";
-import { signIn } from "next-auth/react";
 
 export const authOptions = {
   providers: [
