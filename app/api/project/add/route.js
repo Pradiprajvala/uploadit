@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/googleSetup";
 import { CreateProject } from "@/app/Services/Database/ProjectUtils/CreateProject";
 import { NextResponse } from "next/server";
 
