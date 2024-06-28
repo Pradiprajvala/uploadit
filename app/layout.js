@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { getServerSession } from "next-auth";
 import SessionProvider from "./components/SessionProvider.jsx";
+import Navbar from "./components/Navbar/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,7 +19,8 @@ export default async function RootLayout({ children }) {
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body className={`${inter.variable} flex flex-col h-screen`}>
+        <Navbar />
         <SessionProvider session={session}>{children}</SessionProvider>
       </body>
     </html>
