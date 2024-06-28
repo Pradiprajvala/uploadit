@@ -19,12 +19,14 @@ import ProjectCard from "./ProjectCard";
 import Cross from "../Cross";
 import Check from "../Check";
 import Spinner from "../Spinner";
+import Link from "next/link";
 
 export default function Component() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectsData, setProjectsData] = useState([]);
   const [toggleFetch, setToggleFetch] = useState(false);
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
+  const loadingSkeletonData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const {
     data: { user },
   } = useSession();
@@ -86,22 +88,27 @@ export default function Component() {
         </Button>
       </header>
       {isProjectsLoading ? (
-        <div className="flex justify-center items-center font-bold">
-          <Spinner size={25} />
-        </div>
+        <main className="flex flex-col gap-8 p-4 md:p-8 lg:p-12">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {loadingSkeletonData.map((_, key) => {
+              return <ProjectCard key={key} loading={true} />;
+            })}
+          </div>
+        </main>
       ) : (
         <main className="flex flex-col gap-8 p-4 md:p-8 lg:p-12">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {projectsData.map((project, key) => {
               return (
-                <ProjectCard
-                  key={key}
-                  projectTitle={project.name}
-                  projectOwnerName={
-                    project.ownerId === user._id ? "You" : project.owner.name
-                  }
-                  videosCount={project.videos.length}
-                />
+                <Link key={key} href={`/project/${project._id}`}>
+                  <ProjectCard
+                    projectTitle={project.name}
+                    projectOwnerName={
+                      project.ownerId === user._id ? "You" : project.owner.name
+                    }
+                    videosCount={project.videos.length}
+                  />
+                </Link>
               );
             })}
             {isModalOpen && (

@@ -1,7 +1,32 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 
-const ProjectCard = ({ projectTitle, projectOwnerName, videosCount }) => {
+const ProjectCard = ({
+  projectTitle,
+  projectOwnerName,
+  videosCount,
+  loading,
+}) => {
+  if (loading) {
+    return (
+      <Card className="group">
+        <CardContent className="flex flex-col gap-4 p-6">
+          <div className="flex items-center justify-between">
+            <Skeleton className="w-[250px] h-4"></Skeleton>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Skeleton className="w-4 h-4" />
+              <Skeleton className="w-[8px] h-4" />
+            </div>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <Skeleton className="w-[150px] h-4"></Skeleton>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="group hover:shadow-lg transition-shadow duration-300 cursor-pointer">
       <CardContent className="flex flex-col gap-4 p-6">

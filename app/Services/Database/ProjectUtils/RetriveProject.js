@@ -13,6 +13,8 @@ async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
         message: "Project Not Found",
       };
     }
+    const res = await RetriveUser({ userID: foundProject.ownerId });
+    foundProject.owner = res.user;
     return {
       error: false,
       status: 200,
