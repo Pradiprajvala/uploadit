@@ -44,7 +44,7 @@ function SignIn() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get(name) === "CredentialsSignin")
+    if (urlParams.get("error") === "CredentialsSignin")
       setLoginInvalidCredentials(true);
   }, []);
 
