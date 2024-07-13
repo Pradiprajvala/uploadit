@@ -1,5 +1,6 @@
 import { ObjectId, ProjectsCollection } from "../MongoServices";
 import { RetriveUser } from "../UserUtils/RetriveUser";
+import { RetriveVideos } from "../VideoUtils/RetriveVideo";
 
 async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
   try {
@@ -13,8 +14,11 @@ async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
         message: "Project Not Found",
       };
     }
-    const res = await RetriveUser({ userID: foundProject.ownerId });
-    foundProject.owner = res.user;
+    const userRes = await RetriveUser({ userID: foundProject.ownerId });
+    foundProject.owner = userRes.user;
+
+    const videosRes = await RetriveVideos(foundProject.videos);
+    foundProject.videos = videosRes.videos;
     return {
       error: false,
       status: 200,

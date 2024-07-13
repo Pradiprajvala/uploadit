@@ -1,7 +1,7 @@
 import { ref, uploadBytesResumable } from "firebase/storage";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/googleSetup";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { storage } from "@/app/Services/Database/firebase";
 import { v4 as uuid } from "uuid";
 import { CreateVideo } from "@/app/Services/Database/VideoUtils/CreateVideo";
@@ -18,6 +18,11 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const video = formData.get("video");
+    const projectId = formData.get("projectId");
+    const status = formData.get("status");
+    const title = formData.get("title");
+    const desc = formData.get("desc");
+    const defaultThumbnail = formData.get("defaultThumbnail");
     if (!video || !video.type.startsWith("video/")) {
       throw new Error("Uploaded file is not a video.");
     }
@@ -29,7 +34,6 @@ export async function POST(request) {
     const storageRef = ref(storage, videoPath);
     const upload = uploadBytesResumable(storageRef, uint8Array);
 
-    let projectId = "65e9b8daf8ed3110f2cc6952";
     return new Promise((resolve, reject) => {
       upload.on(
         "state_changed",
@@ -46,6 +50,10 @@ export async function POST(request) {
               path: upload.snapshot.ref.fullPath,
               projectId,
               title: undefined,
+              status,
+              title,
+              desc,
+              defaultThumbnail,
             });
             if (insertedVideo.error) {
               const error = new Error(" Could Not Create Video");
@@ -56,6 +64,7 @@ export async function POST(request) {
               NextResponse.json({
                 message: "Success",
                 video: insertedVideo.video,
+                status: 201,
               })
             );
           } catch (error) {
@@ -74,6 +83,6 @@ export async function POST(request) {
 }
 
 function credentialsNotAvailable(session) {
-  if (!session || !session.user) return true;
+  if (!session || !session.user || !session.user.name) return true;
   return false;
 }
