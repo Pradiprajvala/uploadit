@@ -7,7 +7,6 @@ export async function POST(request) {
     const formData = await request.formData();
     const videoId = formData.get("videoId");
     const { video } = await RetriveVideoById(videoId);
-    console.log("Video", video);
     const videoPath = video?.path;
     const url = await getVideoURL(videoPath);
     if (video) video.url = url;
