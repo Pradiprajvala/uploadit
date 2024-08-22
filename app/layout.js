@@ -20,7 +20,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.variable} flex flex-col h-screen`}>
-        <Navbar />
+        <Navbar session={session} />
         <SessionProvider session={session}>{children}</SessionProvider>
       </body>
     </html>

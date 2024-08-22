@@ -4,7 +4,10 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 
-function Navbar() {
+function Navbar({ session }) {
+  const userIsLoggedIn =
+    session && session.user && session.user.name ? true : false;
+  console.log(userIsLoggedIn);
   return (
     <header className="flex h-16 w-full items-center justify-between bg-background px-4 md:px-6">
       <Link
@@ -20,10 +23,12 @@ function Navbar() {
               <MenuIcon className="h-6 w-6" />
               <span className="sr-only">Toggle navigation</span>
             </Button> */}
-        <Button variant="outline" onClick={() => signOut()}>
-          <LogOutIcon className="h-5 w-5 md:mr-2 sm:mr-0" />
-          <div className="hidden sm:inline">Logout</div>
-        </Button>
+        {userIsLoggedIn && (
+          <Button variant="outline" onClick={() => signOut()}>
+            <LogOutIcon className="h-5 w-5 md:mr-2 sm:mr-0" />
+            <div className="hidden sm:inline">Logout</div>
+          </Button>
+        )}
       </div>
     </header>
   );

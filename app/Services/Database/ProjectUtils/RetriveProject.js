@@ -15,8 +15,9 @@ async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
       };
     }
     const userRes = await RetriveUser({ userID: foundProject.ownerId });
+    const members = await RetriveUser({ userID: foundProject.members });
     foundProject.owner = userRes.user;
-
+    foundProject.members = members.user;
     const videosRes = await RetriveVideos(foundProject.videos);
     foundProject.videos = videosRes.videos;
     return {

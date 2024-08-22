@@ -52,7 +52,7 @@ function Project({ params }) {
       </div>
     );
   }
-  const { name, owner, description } = project;
+  const { name, owner, description, members } = project;
   return (
     <div className="grow">
       <header className="sticky top-0 flex items-center justify-between bg-background px-4 py-4 md:px-8 md:py-6 lg:px-12 lg:py-8">
@@ -62,7 +62,8 @@ function Project({ params }) {
             {`Owner: ${owner.name}`}
           </div>
           <div className="text-lg text-muted-foreground">
-            {`Members: Pradip Vala, Dhiraj Shah, Samay Raina`}
+            {`Members: `}
+            {members?.map((member) => member.name)}
           </div>
         </div>
         <Button type="submit" onClick={() => setAddNewVideoModalIsOpen(true)}>
@@ -144,6 +145,12 @@ function Project({ params }) {
             </div>
           </main>
         )} */}
+      {!projectIsLoading &&
+        (!project || !project.videos || !project.videos.length) && (
+          <p className="w-full flex justify-center text-xl text-muted-foreground md:text-2xl">
+            No Videos right Now...
+          </p>
+        )}
     </div>
   );
 }
