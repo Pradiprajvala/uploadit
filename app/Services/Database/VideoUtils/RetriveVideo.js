@@ -27,7 +27,6 @@ async function RetriveVideoById(videoId) {
     const video = await VideosCollection.findOne({
       _id: new ObjectId(videoId),
     });
-    console.log("Video 2", video, videoId);
     return {
       error: false,
       status: 200,

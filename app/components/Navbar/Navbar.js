@@ -7,7 +7,6 @@ import React from "react";
 function Navbar({ session }) {
   const userIsLoggedIn =
     session && session.user && session.user.name ? true : false;
-  console.log(userIsLoggedIn);
   return (
     <header className="flex h-16 w-full items-center justify-between bg-background px-4 md:px-6">
       <Link

@@ -11,8 +11,6 @@ function Project({ params }) {
   const [addNewVideoModalIsOpen, setAddNewVideoModalIsOpen] = useState(false);
   const projectId = params.projectId;
 
-  console.log(project);
-
   useEffect(() => {
     if (project === null) {
       loadProjects();

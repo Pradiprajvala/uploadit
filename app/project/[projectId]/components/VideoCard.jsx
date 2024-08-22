@@ -4,7 +4,6 @@ import Image from "next/image";
 
 function VideoCard({ video }) {
   const pathname = window.location.pathname;
-  console.log(video, video.defaultThumbnail);
   return (
     <Link
       className="flex justify-center cursor-pointer"

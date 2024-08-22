@@ -13,7 +13,6 @@ async function RetriveUser({ userID }) {
       }
     } else {
       // userId is an array
-      console.log("User Id Array", userID);
       let userIDs = userID.map((id) => new ObjectId(id));
       foundUser = await UsersCollection.find({
         _id: {
@@ -27,7 +26,6 @@ async function RetriveUser({ userID }) {
           username: user.username,
         }));
     }
-    console.log("foundUser", foundUser);
     if (!foundUser) {
       return {
         error: true,

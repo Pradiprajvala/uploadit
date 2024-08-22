@@ -222,7 +222,6 @@ export function Combobox({ videoStatus, setVideoStatus }) {
     (status) => status.value !== "uploaded" && status.value !== "scheduled"
   );
 
-  console.log("VideoStatuses", videoStatuses);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
