@@ -22,10 +22,14 @@ export async function POST(request) {
     const videoPath = formData.get("videoPath");
     const title = formData.get("title");
     const description = formData.get("description");
-    const credentials = await exchangeCodeForTokens(code);
+    const { client_id, client_secret } = process.env;
+    const credentials = await exchangeCodeForTokens(
+      code,
+      client_id,
+      client_secret
+    );
     const { access_token, token_type, scope, id_token, refresh_token } =
       credentials;
-
     const oauth2Client = new google.auth.OAuth2({
       clientSecret: process.env.CLIENT_SECRET,
       clientId: process.env.CLIENT_ID,
@@ -88,7 +92,12 @@ function credentialsNotAvailable(session) {
   return false;
 }
 
-const exchangeCodeForTokens = async (authorizationCode) => {
+const exchangeCodeForTokens = async (
+  authorizationCode,
+  client_id,
+  client_secret
+) => {
+  console.log("Client ID", client_id, client_secret);
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -96,9 +105,8 @@ const exchangeCodeForTokens = async (authorizationCode) => {
     },
     body: new URLSearchParams({
       code: authorizationCode,
-      client_id:
-        "192238680972-77n8uc47jf2f810kv5vokk4a2tond0rs.apps.googleusercontent.com",
-      client_secret: "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",
+      client_id,
+      client_secret,
       redirect_uri: "postmessage",
       grant_type: "authorization_code",
     }),
