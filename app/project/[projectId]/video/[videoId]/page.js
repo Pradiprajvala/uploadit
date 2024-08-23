@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 
 function Video({ params }) {
   const [video, setVideo] = useState(null);
@@ -49,6 +50,28 @@ function Video({ params }) {
       if (data.status === 200) {
         setVideo(data.video);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSuccess = async (response) => {
+    const { path, title, desc } = video;
+    if (!path || path === "") return;
+    const { code, expires_in } = response;
+    const formData = new FormData();
+    formData.append("code", code);
+    formData.append("videoPath", path);
+    formData.append("description", desc);
+    formData.append("title", title);
+    formData.append("expires_at", Date.now() + expires_in);
+    try {
+      const res = await fetch("/api/video/uploadToYoutube", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      console.log("Sucess");
     } catch (error) {
       console.log(error);
     }
@@ -80,12 +103,9 @@ function Video({ params }) {
               Upload new version
             </Button>
             <Separator className="my-4" />
-            <Button
-              disabled={videoStatus !== "readyForUpload"}
-              className="w-full"
-            >
-              Upload to Youtube
-            </Button>
+            <GoogleOAuthProvider clientId="192238680972-77n8uc47jf2f810kv5vokk4a2tond0rs.apps.googleusercontent.com">
+              <UploadToYoutubeButton handleSuccess={handleSuccess} />
+            </GoogleOAuthProvider>
           </div>
         </div>
         <div className="mb-4">
@@ -98,6 +118,23 @@ function Video({ params }) {
 }
 
 export default Video;
+
+export const UploadToYoutubeButton = ({ handleSuccess }) => {
+  const signInWithGoogle = useGoogleLogin({
+    onSuccess: handleSuccess,
+    onerror: (error) => console.log(error),
+    scope: "https://www.googleapis.com/auth/youtubepartner",
+    prompt: "consent",
+    accessType: "offline",
+    flow: "auth-code",
+    redirect_uri: "postmessage",
+  });
+  return (
+    <Button disabled={false} className="w-full mb-4" onClick={signInWithGoogle}>
+      Upload to Youtube
+    </Button>
+  );
+};
 
 const TeamMembers = () => {
   return (
