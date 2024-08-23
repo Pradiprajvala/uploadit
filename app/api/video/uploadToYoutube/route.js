@@ -97,7 +97,6 @@ const exchangeCodeForTokens = async (
   client_id,
   client_secret
 ) => {
-  console.log("Client ID", client_id, client_secret);
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
