@@ -2,7 +2,7 @@ import { ObjectId, ProjectsCollection } from "../MongoServices";
 import { RetriveUser } from "../UserUtils/RetriveUser";
 import { RetriveVideos } from "../VideoUtils/RetriveVideo";
 
-async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
+async function RetriveProjectByID({ projectID }) {
   try {
     const foundProject = await ProjectsCollection.findOne({
       _id: new ObjectId(projectID),
@@ -26,6 +26,34 @@ async function RetriveProjectByID({ projectID = "65e9b8daf8ed3110f2cc6952" }) {
       project: foundProject,
     };
   } catch (error) {
+    return {
+      error: true,
+      status: 701,
+      message: "Something went wrong",
+    };
+  }
+}
+async function RetriveMultipleProjectByID({ projectIDs }) {
+  try {
+    const foundProject = await ProjectsCollection.find({
+      _id: {
+        $in: projectIDs.map((id) => new ObjectId(id)),
+      },
+    }).toArray();
+    if (!foundProject) {
+      return {
+        error: true,
+        status: 404,
+        message: "Project Not Found",
+      };
+    }
+    return {
+      error: false,
+      status: 200,
+      projects: foundProject,
+    };
+  } catch (error) {
+    console.log(error);
     return {
       error: true,
       status: 701,
@@ -78,4 +106,8 @@ async function RetriveProjectsOfUser({ userID }) {
   }
 }
 
-export { RetriveProjectByID, RetriveProjectsOfUser };
+export {
+  RetriveProjectByID,
+  RetriveMultipleProjectByID,
+  RetriveProjectsOfUser,
+};

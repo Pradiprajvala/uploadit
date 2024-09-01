@@ -32,16 +32,16 @@ export default function Component() {
   } = useSession();
 
   useEffect(() => {
-    if (user._id) fetchProjects(user._id);
+    if (user._id) fetchProjects(user.projects);
   }, [toggleFetch]);
 
   useEffect(() => {
-    if (user._id && projectsData.length === 0) fetchProjects(user._id);
+    if (user._id && projectsData.length === 0) fetchProjects(user.projects);
   }, [user]);
 
-  const fetchProjects = async (_id) => {
+  const fetchProjects = async (projects) => {
     const formData = new FormData();
-    formData.append("ownerId", _id);
+    formData.append("projectIds", projects);
     try {
       const res = await fetch("/api/project/retrive", {
         method: "POST",
@@ -50,8 +50,31 @@ export default function Component() {
       const data = await res.json();
       if (data.status === 200) {
         setProjectsData(data.projects);
+        fetchOwnerNames(data.projects);
       }
       setIsProjectsLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchOwnerNames = async (projects) => {
+    const formData = new FormData();
+    const ownerIds = projects.map((project) => project.ownerId);
+    formData.append("userIds", ownerIds);
+    try {
+      const res = await fetch("/api/users/getUsersNames", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.status === 200) {
+        const newProjects = projects.map((project) => {
+          const owner = data.user.find((u) => u._id === project.ownerId);
+          return { ...project, owner };
+        });
+        setProjectsData(newProjects);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -107,7 +130,7 @@ export default function Component() {
                       projectOwnerName={
                         project.ownerId === user._id
                           ? "You"
-                          : project.owner.name
+                          : project.owner?.name
                       }
                       videosCount={project.videos.length}
                     />
