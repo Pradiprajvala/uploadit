@@ -48,5 +48,35 @@ async function RetriveUser({ userID }) {
     };
   }
 }
-
-export { RetriveUser };
+async function RetriveNmaesOfMultipleUser({ userIDs }) {
+  try {
+    userIDs = userIDs.map((id) => new ObjectId(id));
+    let foundUser = await UsersCollection.find({
+      _id: {
+        $in: userIDs,
+      },
+    })
+      .project({ _id: 1, name: 1, username: 1 })
+      .toArray();
+    if (!foundUser) {
+      return {
+        error: true,
+        status: 404,
+        message: "User Not Found",
+      };
+    }
+    return {
+      error: false,
+      status: 200,
+      user: foundUser,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      error: true,
+      status: 701,
+      message: "Something went wrong",
+    };
+  }
+}
+export { RetriveUser, RetriveNmaesOfMultipleUser };

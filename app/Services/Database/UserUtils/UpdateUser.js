@@ -12,7 +12,6 @@ async function AddProject({ userID, projectId }) {
         },
       }
     );
-    console.log("Reslut", result);
     return {
       error: false,
       status: 200,
