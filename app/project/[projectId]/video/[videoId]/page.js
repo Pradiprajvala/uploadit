@@ -27,17 +27,30 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { isUserOwner } from "@/app/lib/uploadPermission";
 
 function Video({ params }) {
   const [video, setVideo] = useState(null);
   const [videoStatus, setVideoStatus] = useState(
     video && video.status ? video.status : "pending"
   );
-  const videoId = params.videoId;
-  console.log(video);
+  const [isOwner, setIsOwner] = useState(false);
   useEffect(() => {
     retriveVideo();
   }, []);
+  const videoId = params.videoId;
+  const projectId = params.projectId;
+  useEffect(() => {
+    checkUserIsOwner(projectId);
+  }, [projectId]);
+
+  const checkUserIsOwner = async (projectId) => {
+    const io = await isUserOwner(projectId);
+    setIsOwner(io);
+  };
+
+  console.log(video);
+
   const retriveVideo = async () => {
     try {
       const formData = new FormData();
@@ -102,10 +115,14 @@ function Video({ params }) {
             <Button variant="secondary" className="w-full">
               Upload new version
             </Button>
-            <Separator className="my-4" />
-            <GoogleOAuthProvider clientId="192238680972-77n8uc47jf2f810kv5vokk4a2tond0rs.apps.googleusercontent.com">
-              <UploadToYoutubeButton handleSuccess={handleSuccess} />
-            </GoogleOAuthProvider>
+            {isOwner && (
+              <>
+                <Separator className="my-4" />
+                <GoogleOAuthProvider clientId="192238680972-77n8uc47jf2f810kv5vokk4a2tond0rs.apps.googleusercontent.com">
+                  <UploadToYoutubeButton handleSuccess={handleSuccess} />
+                </GoogleOAuthProvider>
+              </>
+            )}
           </div>
         </div>
         <div className="mb-4">
