@@ -31,9 +31,9 @@ export async function POST(request) {
       const projects = await RetriveMultipleProjectByID({
         projectIDs: projectIds.split(","),
       });
-      console.log("PROJECTS", projects);
       return NextResponse.json(projects);
     }
+    return NextResponse.json([]);
   } catch (error) {
     console.log(error);
     return NextResponse.json({
