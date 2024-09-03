@@ -49,8 +49,6 @@ function Video({ params }) {
     setIsOwner(io);
   };
 
-  console.log(video);
-
   const retriveVideo = async () => {
     try {
       const formData = new FormData();
@@ -62,7 +60,28 @@ function Video({ params }) {
       const data = await res.json();
       if (data.status === 200) {
         setVideo(data.video);
+        setVideoStatus(data.video.status);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateVideoStatus = async (videoStatus) => {
+    try {
+      const formData = new FormData();
+      formData.append("videoId", videoId);
+      formData.append("videoStatus", videoStatus);
+      const res = await fetch("/api/video/updateStatus", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data && data.status == 200) {
+        setVideoStatus(videoStatus);
+        return;
+      }
+      throw new Error("Something went wrong updating status");
     } catch (error) {
       console.log(error);
     }
@@ -108,7 +127,7 @@ function Video({ params }) {
                 </Label>
                 <Combobox
                   videoStatus={videoStatus}
-                  setVideoStatus={setVideoStatus}
+                  setVideoStatus={updateVideoStatus}
                 />
               </div>
             </Card>
@@ -119,7 +138,10 @@ function Video({ params }) {
               <>
                 <Separator className="my-4" />
                 <GoogleOAuthProvider clientId="192238680972-77n8uc47jf2f810kv5vokk4a2tond0rs.apps.googleusercontent.com">
-                  <UploadToYoutubeButton handleSuccess={handleSuccess} />
+                  <UploadToYoutubeButton
+                    disabled={videoStatus === "readyForUpload" ? false : true}
+                    handleSuccess={handleSuccess}
+                  />
                 </GoogleOAuthProvider>
               </>
             )}
@@ -136,7 +158,7 @@ function Video({ params }) {
 
 export default Video;
 
-export const UploadToYoutubeButton = ({ handleSuccess }) => {
+export const UploadToYoutubeButton = ({ handleSuccess, disabled }) => {
   const signInWithGoogle = useGoogleLogin({
     onSuccess: handleSuccess,
     onerror: (error) => console.log(error),
@@ -147,7 +169,11 @@ export const UploadToYoutubeButton = ({ handleSuccess }) => {
     redirect_uri: "postmessage",
   });
   return (
-    <Button disabled={false} className="w-full mb-4" onClick={signInWithGoogle}>
+    <Button
+      disabled={disabled}
+      className="w-full mb-4"
+      onClick={signInWithGoogle}
+    >
       Upload to Youtube
     </Button>
   );

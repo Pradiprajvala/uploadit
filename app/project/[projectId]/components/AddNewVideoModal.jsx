@@ -246,9 +246,7 @@ export function Combobox({ videoStatus, setVideoStatus }) {
                   key={status.value}
                   value={status.value}
                   onSelect={(currentValue) => {
-                    setVideoStatus(
-                      currentValue === videoStatus ? "" : currentValue
-                    );
+                    setVideoStatus(currentValue);
                     setOpen(false);
                   }}
                 >
