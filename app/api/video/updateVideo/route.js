@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { storage } from "@/app/Services/Database/firebase";
-import { v4 as uuid } from "uuid";
-import { CreateVideo } from "@/app/Services/Database/VideoUtils/CreateVideo";
+import { UpdateVideoDefaultThumbnail } from "@/app/Services/Database/VideoUtils/UpdateDefaultThumbnail";
 
 export async function POST(request) {
   try {
@@ -18,18 +17,15 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const video = formData.get("video");
-    const projectId = formData.get("projectId");
-    const status = formData.get("status");
-    const title = formData.get("title");
-    const desc = formData.get("desc");
+    const videoId = formData.get("videoId");
+    const videoPath = formData.get("videoPath");
     const defaultThumbnail = formData.get("defaultThumbnail");
+
     if (!video || !video.type.startsWith("video/")) {
       throw new Error("Uploaded file is not a video.");
     }
+
     const uint8Array = new Uint8Array(await video.arrayBuffer());
-    const fileName = video.name;
-    const fileExtension = fileName.split(".").pop();
-    const videoPath = `Videos/${uuid()}.${fileExtension}`;
 
     const storageRef = ref(storage, videoPath);
     const upload = uploadBytesResumable(storageRef, uint8Array);
@@ -46,24 +42,20 @@ export async function POST(request) {
         },
         async () => {
           try {
-            const insertedVideo = await CreateVideo({
-              path: upload.snapshot.ref.fullPath,
-              projectId,
-              title: undefined,
-              status,
-              title,
-              desc,
+            const result = await UpdateVideoDefaultThumbnail({
+              videoId,
               defaultThumbnail,
             });
-            if (insertedVideo.error) {
-              const error = new Error(" Could Not Create Video");
-              error.status = insertedVideo.status;
+            if (result.error) {
+              const error = new Error("Could Not Create Video");
+              error.status = result.status;
               throw error;
             }
+            console.log(result);
             resolve(
               NextResponse.json({
                 message: "Success",
-                video: insertedVideo.video,
+                ...result,
                 status: 201,
               })
             );

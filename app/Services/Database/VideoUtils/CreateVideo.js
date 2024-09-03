@@ -5,12 +5,10 @@ import {
 } from "../MongoServices";
 
 export async function CreateVideo(videoDetails) {
-  const { path, projectId, title } = videoDetails;
+  const { projectId } = videoDetails;
   try {
     const insertedVideo = await VideosCollection.insertOne({
-      path,
-      projectId,
-      title,
+      ...videoDetails,
     });
     if (!insertedVideo.insertedId) {
       return {

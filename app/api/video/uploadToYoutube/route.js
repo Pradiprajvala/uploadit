@@ -1,7 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/googleSetup";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { getBytes, getStream, ref } from "firebase/storage";
+import { storage } from "@/app/Services/Database/firebase";
 import streamifier from "streamifier";
 
 export async function POST(request) {
@@ -14,22 +16,24 @@ export async function POST(request) {
       throw error;
     }
 
-    const {
-      access_token,
-      token_type,
-      expires_at,
-      scope,
-      id_token,
-      refresh_token,
-    } = session.user.credentials;
-
     const formData = await request.formData();
-    const video = formData.get("video");
-
+    const code = formData.get("code");
+    const expires_at = formData.get("expires_at");
+    const videoPath = formData.get("videoPath");
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const { client_id, client_secret } = process.env;
+    const credentials = await exchangeCodeForTokens(
+      code,
+      client_id,
+      client_secret
+    );
+    const { access_token, token_type, scope, id_token, refresh_token } =
+      credentials;
     const oauth2Client = new google.auth.OAuth2({
       clientSecret: process.env.CLIENT_SECRET,
       clientId: process.env.CLIENT_ID,
-      redirectUri: process.env.NEXT_REDIRECT_URI,
+      redirectUri: "postmessage",
       credentials: {
         access_token: access_token,
         expiry_date: expires_at,
@@ -46,8 +50,8 @@ export async function POST(request) {
     });
 
     const snippet = {
-      title: "Video Title",
-      description: "Video Description",
+      title,
+      description,
       privacyStatus: "public",
     };
 
@@ -55,7 +59,8 @@ export async function POST(request) {
       privacyStatus: "public",
     };
 
-    const uint8Array = new Uint8Array(await video.arrayBuffer());
+    const videoRef = ref(storage, videoPath);
+    const uint8Array = new Uint8Array(await getBytes(videoRef));
     const videoReadStream = streamifier.createReadStream(uint8Array);
 
     const uploadedVideo = await youtube_instance.videos.insert({
@@ -83,19 +88,28 @@ export async function POST(request) {
 }
 
 function credentialsNotAvailable(session) {
-  if (
-    !session ||
-    !session.user ||
-    !session.user.credentials ||
-    !(
-      session.user.credentials.access_token &&
-      session.user.credentials.token_type &&
-      session.user.credentials.expires_at &&
-      session.user.credentials.scope &&
-      session.user.credentials.id_token &&
-      session.user.credentials.refresh_token
-    )
-  )
-    return true;
+  if (!session || !session.user || !session.user.name) return true;
   return false;
 }
+
+const exchangeCodeForTokens = async (
+  authorizationCode,
+  client_id,
+  client_secret
+) => {
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      code: authorizationCode,
+      client_id,
+      client_secret,
+      redirect_uri: "postmessage",
+      grant_type: "authorization_code",
+    }),
+  });
+  const data = await response.json();
+  return data;
+};

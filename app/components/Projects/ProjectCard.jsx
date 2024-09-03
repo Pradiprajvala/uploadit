@@ -39,9 +39,11 @@ const ProjectCard = ({
             <span>{videosCount}</span>
           </div>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {`Owner: ${projectOwnerName}`}
-        </div>
+        {projectOwnerName && (
+          <div className="text-sm text-muted-foreground">
+            {`Owner: ${projectOwnerName}`}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,4 +1,5 @@
 import { ProjectsCollection } from "@/app/Services/Database/MongoServices";
+import { AddProject } from "../UserUtils/UpdateUser";
 
 export async function CreateProject(projectDetails) {
   const { projectName, ownerId, projectDesciption, members } = projectDetails;
@@ -17,6 +18,19 @@ export async function CreateProject(projectDetails) {
         status: 701,
       };
     }
+    await AddProject({
+      userID: ownerId,
+      projectId: insertedProject.insertedId,
+    });
+    console.log("Memebers", members.split(","));
+    for (let member of members.split(",")) {
+      console.log(member);
+      await AddProject({
+        userID: member,
+        projectId: insertedProject.insertedId,
+      });
+    }
+
     const insertedProjectDocument = await ProjectsCollection.findOne({
       _id: insertedProject.insertedId,
     });

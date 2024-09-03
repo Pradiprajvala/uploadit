@@ -83,7 +83,7 @@ module.exports = {
       },
       fontWeight: {
         bold: "700",
-        "semi-bold": "600",
+        "semi-bold": "500",
       },
     },
   },
