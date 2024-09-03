@@ -11,9 +11,14 @@ export async function middleware(request) {
     if (!user || !user.projects?.includes(projectId)) {
       return new NextResponse("Unauthorized");
     }
+  } else if (parts.length >= 4 && parts[3] === "api") {
+    const token = await getToken({ req: request });
+    if (!token || !token.name) {
+      return new NextResponse("Unauthorized");
+    }
   }
 }
 
 export const config = {
-  matcher: ["/project/:path*"],
+  matcher: ["/project/:path*", "/api/project/:path*", "/api/video/:path*"],
 };
