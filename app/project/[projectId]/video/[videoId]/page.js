@@ -28,6 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { isUserOwner } from "@/app/lib/uploadPermission";
+import UploadNewVersion from "./components/UploadNewVersion";
 
 function Video({ params }) {
   const [video, setVideo] = useState(null);
@@ -35,6 +36,7 @@ function Video({ params }) {
     video && video.status ? video.status : "pending"
   );
   const [isOwner, setIsOwner] = useState(false);
+  const [reloadKey, setReloadKey] = useState(1); // To force to re render video, when the video file is changed but path and so url is same as previous
   useEffect(() => {
     retriveVideo();
   }, []);
@@ -61,6 +63,7 @@ function Video({ params }) {
       if (data.status === 200) {
         setVideo(data.video);
         setVideoStatus(data.video.status);
+        setReloadKey((prevKey) => prevKey + 1);
       }
     } catch (error) {
       console.log(error);
@@ -114,7 +117,11 @@ function Video({ params }) {
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-4 gap-4">
           <div className="mb-4 col-span-3">
-            <video className="aspect-video rounded-lg w-full" controls>
+            <video
+              key={reloadKey}
+              className="aspect-video rounded-lg w-full"
+              controls
+            >
               <source src={video?.url} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
@@ -131,9 +138,7 @@ function Video({ params }) {
                 />
               </div>
             </Card>
-            <Button variant="secondary" className="w-full">
-              Upload new version
-            </Button>
+            <UploadNewVersion video={video} retriveVideo={retriveVideo} />
             {isOwner && (
               <>
                 <Separator className="my-4" />
