@@ -7,6 +7,7 @@ import { UpdateVideoDefaultThumbnail } from "@/app/Services/Database/VideoUtils/
 
 export async function POST(request) {
   try {
+    console.log("Got request");
     const session = await getServerSession(authOptions);
 
     if (credentialsNotAvailable(session)) {
@@ -27,6 +28,8 @@ export async function POST(request) {
 
     const uint8Array = new Uint8Array(await video.arrayBuffer());
 
+    console.log("Got array buffer");
+
     const storageRef = ref(storage, videoPath);
     const upload = uploadBytesResumable(storageRef, uint8Array);
 
@@ -38,6 +41,7 @@ export async function POST(request) {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100; // Upload Percentage
         },
         (error) => {
+          console.log("This is Error", error);
           reject(error);
         },
         async () => {
