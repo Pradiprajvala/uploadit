@@ -115,8 +115,8 @@ function Video({ params }) {
   return (
     video && (
       <div className="container mx-auto p-4">
-        <div className="grid grid-cols-4 gap-4">
-          <div className="mb-4 col-span-3">
+        <div className="flex flex-row justify-center">
+          <div className="mb-4 col-span-2 w-1/2">
             <video
               key={reloadKey}
               className="aspect-video rounded-lg w-full"
@@ -125,8 +125,12 @@ function Video({ params }) {
               <source src={video?.url} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
+            <div className="m-4">
+              <h1 className="text-2xl font-bold">{video.title}</h1>
+              <p>{video.desc}</p>
+            </div>
           </div>
-          <div className="col-span-1 px-4">
+          <div className="col-span-1 px-4 w-1/4">
             <Card className="p-3 mb-4">
               <div className="grid items-center grid-cols-4 gap-4">
                 <Label htmlFor="description" className="text-right">
@@ -151,10 +155,6 @@ function Video({ params }) {
               </>
             )}
           </div>
-        </div>
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold">{video.title}</h1>
-          <p>{video.desc}</p>
         </div>
       </div>
     )
